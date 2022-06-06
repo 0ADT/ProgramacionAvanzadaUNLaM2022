@@ -64,7 +64,7 @@ public class ArchivoMesadasDeGranito {
 	}
 	
 	public static void main(String[] args) {
-		crearArchivoIn(200000, "src\test\resources\ejercicios_loom\oia2\Lote De Prueba\Entrada\\Caso_00_.in");
+		crearArchivoIn(200000, "src/test/resources/ejercicios_loom/oia2/Lote De Prueba/Entrada/Caso_00_.in");
 		crearArchivoMesadasIgualesIn(200000, "src\\test\\resources\\ejercicios_loom\\oia2\\Lote De Prueba\\Entrada\\Caso_00_Iguales.in");
 
 	}

@@ -62,8 +62,8 @@ public class TestArmandoMoviles {
 	}
 	
 	@Test
-	public void Caso_02_Ningún_Colgante() {
-		Artesano artesano = new Artesano(entrada + "Caso_02_Ningún_Colgante.in", salidaEjecucion + "Caso_02_Ningún_Colgante.out");
+	public void Caso_02_Ningun_Colgante() {
+		Artesano artesano = new Artesano(entrada + "Caso_02_Ningun_Colgante.in", salidaEjecucion + "Caso_02_Ningun_Colgante.out");
 		
 		if(!artesano.CargarColgantes())
 			Assert.fail("Error al abrir el archivo con los colgantes");
@@ -73,8 +73,8 @@ public class TestArmandoMoviles {
 		if(!artesano.GuardarColgantes())
 			Assert.fail("Error al guardar el archivo con el peso y las varillas");
 		
-		List<String> lineasArchivoSalidaEsperada = leerArchivo(salidaEsperada + "Caso_02_Ningún_Colgante.out");
-		List<String> lineasArchivoSalidaPrograma = leerArchivo(salidaEjecucion + "Caso_02_Ningún_Colgante.out");
+		List<String> lineasArchivoSalidaEsperada = leerArchivo(salidaEsperada + "Caso_02_Ningun_Colgante.out");
+		List<String> lineasArchivoSalidaPrograma = leerArchivo(salidaEjecucion + "Caso_02_Ningun_Colgante.out");
 
 		assertEquals(true, lineasArchivoSalidaEsperada.equals(lineasArchivoSalidaPrograma));
 	}
