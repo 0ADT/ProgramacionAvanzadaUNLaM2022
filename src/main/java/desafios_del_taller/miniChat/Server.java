@@ -9,11 +9,16 @@ import java.net.Socket;
 import java.net.SocketException;
 
 public class Server {
-
-	// private int puerto;
+	private int puerto;
 	// private ArrayList<Socket> clientes;
 
 	public Server(int puerto) throws IOException {
+		this.puerto = puerto;
+
+		EscuchaActiva();
+	}
+
+	private void EscuchaActiva() throws IOException {
 		ServerSocket servidor = new ServerSocket(puerto);
 
 		System.out.println("Server inicializando...");
@@ -67,7 +72,6 @@ public class Server {
 				salir = true;
 			}
 		}
-
 	}
 
 	public static void main(String[] args) {
@@ -80,41 +84,4 @@ public class Server {
 			e.printStackTrace();
 		}
 	}
-
-	/*
-	 * public void run() { ServerSocket servidor = null;
-	 * 
-	 * try { servidor = new ServerSocket(puerto);
-	 * System.out.println("Server inicializando...");
-	 * 
-	 * while (true) { // Se "congela" en la siguiente linea, hasta que llegue un
-	 * pedido Socket socket = servidor.accept();
-	 * 
-	 * clientes.add(socket);
-	 * 
-	 * 
-	 * // Flujos de información DataOutputStream salida = new
-	 * DataOutputStream(socket.getOutputStream()); DataInputStream entrada = new
-	 * DataInputStream(socket.getInputStream());
-	 * 
-	 * ArrayList<String> mensajes = RegistroChat.LeerRegistro();
-	 * 
-	 * salida.writeUTF("");
-	 * 
-	 * for(String m : mensajes) salida.writeUTF(m);
-	 * 
-	 * System.out.println("Conectado cliente: " );
-	 * 
-	 * // El read también es bloqueante, como el accept String mensaje = "Cliente "
-	 * + " dice: " + entrada.readUTF(); System.out.println(mensaje);
-	 * 
-	 * RegistroChat.EscribirRegistro(mensaje);
-	 * 
-	 * // Se cierran recursos entrada.close(); salida.close(); socket.close(); } }
-	 * catch (IOException e) { // TODO Auto-generated catch block
-	 * e.printStackTrace(); }
-	 * 
-	 * 
-	 * // System.out.println("Server Finalizado"); // servidor.close(); }
-	 */
 }

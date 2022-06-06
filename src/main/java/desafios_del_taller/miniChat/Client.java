@@ -18,8 +18,7 @@ public class Client {
 		paquete = new PaqueteChat(scanner.nextLine());
 		System.out.println("Conectando al servidor...");
 
-		// Conecta a un Server. Si no esta activo da Exception:
-		// java.net.ConnectException
+		// Conecta a un Server. Si no esta activo da Exception: java.net.ConnectException
 		Socket socket = new Socket(ip, puerto);
 
 		// Flujos de información
@@ -27,9 +26,6 @@ public class Client {
 		// DataOutputStream salida = new DataOutputStream(socket.getOutputStream());
 		ObjectOutputStream salida = new ObjectOutputStream(socket.getOutputStream());
 		boolean salir = false;
-
-		// Enviar mensaje escrito por consola
-		// String mensajeConsola;// = scanner.nextLine();
 
 		// Recibir mensaje
 		System.out.println("Cliente conectado.");
@@ -50,11 +46,10 @@ public class Client {
 				salida.flush();
 				salida.reset();
 			}
-
 		}
 
-		scanner.close();
 		// Cierre de recursos
+		scanner.close();		
 		entrada.close();
 		salida.close();
 		socket.close();
