@@ -2,13 +2,13 @@ package desafios_del_taller.miniChat;
 
 import java.io.Serializable;
 
-public class PaqueteChat implements Serializable{
+public class MensajesChat implements Serializable{
 
 	private static final long serialVersionUID = 3435570502045552668L;
 	private final String usuario;
 	private String mensaje;
 	
-	public PaqueteChat(String nombre) {
+	public MensajesChat(String nombre) {
 		usuario = nombre;
 	}
 	

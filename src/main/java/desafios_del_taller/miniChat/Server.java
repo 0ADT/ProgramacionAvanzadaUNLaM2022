@@ -38,12 +38,12 @@ public class Server {
 		salida.writeUTF("" + numeroCliente);
 
 		boolean salir = false;
-		// PaqueteChat paquete;
+		// MensajesChat paquete;
 
 		while (!salir) {
 			try {
-				PaqueteChat paquete = (PaqueteChat) entrada.readObject();
-				System.out.println(paquete.getUsuario() + " dice: " + paquete.getMensaje());
+				MensajesChat mensajeChat = (MensajesChat) entrada.readObject();
+				System.out.println(mensajeChat.getUsuario() + " dice: " + mensajeChat.getMensaje());
 
 			} catch (EOFException | SocketException e) {
 				System.out.println("El cliente esta desconectado");
@@ -75,13 +75,44 @@ public class Server {
 	}
 
 	public static void main(String[] args) {
-		try {
-			Server s = new Server(20000);
-			// Thread t = new Thread(s);
+//		try {
+//			Server s = new Server(20000);
+//			// Thread t = new Thread(s);
+//
+//			// t.start();
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
 
-			// t.start();
-		} catch (IOException e) {
+		try {
+			ServerSocket server = new ServerSocket(20000);
+			Socket sc;
+
+			System.out.println("Servidor iniciado");
+
+			while (true) {
+				// Espero la conexion del cliente
+				sc = server.accept();
+
+				ObjectInputStream in = new ObjectInputStream(sc.getInputStream());
+				DataOutputStream out = new DataOutputStream(sc.getOutputStream());
+
+				// Pido al cliente el nombre al cliente
+				// out.writeUTF("Indica tu nombre");
+				String nombreCliente = ((MensajesChat)in.readObject()).getUsuario();
+
+				// Inicio el hilo
+				ServerHilo hilo = new ServerHilo(nombreCliente, in, out);
+				hilo.start();
+
+				System.out.println("Creada la conexion con el cliente " + nombreCliente);
+			}
+
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
+
 	}
 }

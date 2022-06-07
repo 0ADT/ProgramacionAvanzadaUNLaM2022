@@ -8,48 +8,53 @@ import java.net.UnknownHostException;
 import java.util.Scanner;
 
 public class Client {
-	private PaqueteChat paquete;
+	private MensajesChat mensajeChat;
 
 	public Client(String ip, int puerto) throws UnknownHostException, IOException {
 		System.out.println("Ingrese un nombre de usuario:");
 
 		Scanner scanner = new Scanner(System.in);
 
-		paquete = new PaqueteChat(scanner.nextLine());
+		mensajeChat = new MensajesChat(scanner.nextLine());
 		System.out.println("Conectando al servidor...");
 
-		// Conecta a un Server. Si no esta activo da Exception: java.net.ConnectException
+		// Conecta a un Server. Si no esta activo da Exception:
+		// java.net.ConnectException
 		Socket socket = new Socket(ip, puerto);
 
 		// Flujos de información
 		DataInputStream entrada = new DataInputStream(socket.getInputStream());
-		// DataOutputStream salida = new DataOutputStream(socket.getOutputStream());
+		// DataOutputStream salidaString = new
+		// DataOutputStream(socket.getOutputStream());
 		ObjectOutputStream salida = new ObjectOutputStream(socket.getOutputStream());
 		boolean salir = false;
 
 		// Recibir mensaje
 		System.out.println("Cliente conectado.");
-		System.out.println("Soy el cliente número: " + entrada.readUTF());
+		salida.writeObject(mensajeChat);
+		salida.flush();
+		salida.reset();
+		// System.out.println("Soy el cliente número: " + entrada.readUTF());
 
 		while (!salir) {
 
 			// mensajeConsola = scanner.nextLine();
-			paquete.setMensaje(scanner.nextLine());
+			mensajeChat.setMensaje(scanner.nextLine());
 
-			if (paquete.getMensaje().equals("/salir") || paquete.getMensaje().equals("/s")
-					|| paquete.getMensaje().equals("/q")) {
+			if (mensajeChat.getMensaje().equals("/salir") || mensajeChat.getMensaje().equals("/s")
+					|| mensajeChat.getMensaje().equals("/q")) {
 				salir = true;
 			} else {
 				// salida.writeUTF(nombre + ": " + mensajeConsola);
-				System.out.println("Yo: " + paquete.getMensaje());
-				salida.writeObject(paquete);
+				System.out.println("Yo: " + mensajeChat.getMensaje());
+				salida.writeObject(mensajeChat);
 				salida.flush();
 				salida.reset();
 			}
 		}
 
 		// Cierre de recursos
-		scanner.close();		
+		scanner.close();
 		entrada.close();
 		salida.close();
 		socket.close();
