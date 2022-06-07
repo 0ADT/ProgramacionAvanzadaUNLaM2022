@@ -1,92 +1,52 @@
 package desafios_del_taller.miniChat;
 
 import java.io.DataOutputStream;
-import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.SocketException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
 
 public class Server {
-	private int puerto;
-	// private ArrayList<Socket> clientes;
+	private static Map<Integer, DataOutputStream> clientes = new HashMap<>();
 
-	public Server(int puerto) throws IOException {
-		this.puerto = puerto;
+	/**
+	 * @brief Envia los mensajes a todos los usuarios conectados al servidor
+	 * 
+	 * @param numCliente: El numero que se le asigno al entrar al servidor
+	 * @param mensaje:    El mensaje a enviar a todos los usuarios
+	 **/
+	public static void EnviarMensajes(int numCliente, String mensaje) {
+		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+		Iterator<Entry<Integer, DataOutputStream>> it = clientes.entrySet().iterator();
 
-		EscuchaActiva();
-	}
+		mensaje = dtf.format(LocalDateTime.now()) + " - " + mensaje;
+		RegistroChat.EscribirRegistro(mensaje);
 
-	private void EscuchaActiva() throws IOException {
-		ServerSocket servidor = new ServerSocket(puerto);
-
-		System.out.println("Server inicializando...");
-
-		int numeroCliente = 1;
-
-		// Se "congela" en la siguiente linea, hasta que llegue un pedido
-		Socket socket = servidor.accept();
-
-		// Flujos de información
-		DataOutputStream salida = new DataOutputStream(socket.getOutputStream());
-		// DataInputStream entrada = new DataInputStream(socket.getInputStream());
-		// ObjectOutputStream salida = new ObjectOutputStream(socket.getOutputStream());
-		ObjectInputStream entrada = new ObjectInputStream(socket.getInputStream());
-
-		System.out.println("Conectado cliente: " + numeroCliente);
-		salida.writeUTF("" + numeroCliente);
-
-		boolean salir = false;
-		// MensajesChat paquete;
-
-		while (!salir) {
+		while (it.hasNext()) {
 			try {
-				MensajesChat mensajeChat = (MensajesChat) entrada.readObject();
-				System.out.println(mensajeChat.getUsuario() + " dice: " + mensajeChat.getMensaje());
+				Map.Entry<Integer, DataOutputStream> me = (Entry<Integer, DataOutputStream>) it.next();
 
-			} catch (EOFException | SocketException e) {
-				System.out.println("El cliente esta desconectado");
-
-				// Se cierran recursos
-				entrada.close();
-				salida.close();
-				socket.close();
-
-				socket = servidor.accept();
-				salida = new DataOutputStream(socket.getOutputStream());
-				// salida = new ObjectOutputStream(socket.getOutputStream());
-				entrada = new ObjectInputStream(socket.getInputStream());
-				// entrada = new DataInputStream(socket.getInputStream());
-
-				System.out.println("Conectado cliente: " + numeroCliente);
-				salida.writeUTF("" + numeroCliente);
-			} catch (Exception e) {
-				System.out.println("Error no identificado");
-				System.out.println("Server Finalizado");
-				entrada.close();
-				salida.close();
-				socket.close();
-				servidor.close();
-				System.out.println(e.getCause());
-				salir = true;
+				if (numCliente != (Integer) me.getKey())
+					((DataOutputStream) me.getValue()).writeUTF(mensaje);
+			} catch (IOException e) {
+				it.remove();
 			}
 		}
 	}
 
 	public static void main(String[] args) {
-//		try {
-//			Server s = new Server(20000);
-//			// Thread t = new Thread(s);
-//
-//			// t.start();
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
+		ServerSocket server = null;
 
 		try {
-			ServerSocket server = new ServerSocket(20000);
+			server = new ServerSocket(20000);
 			Socket sc;
+			int numeroCliente = 1;
 
 			System.out.println("Servidor iniciado");
 
@@ -97,21 +57,28 @@ public class Server {
 				ObjectInputStream in = new ObjectInputStream(sc.getInputStream());
 				DataOutputStream out = new DataOutputStream(sc.getOutputStream());
 
-				// Pido al cliente el nombre al cliente
-				// out.writeUTF("Indica tu nombre");
-				String nombreCliente = ((MensajesChat)in.readObject()).getUsuario();
+				out.writeUTF(RegistroChat.LeerRegistro());
+				clientes.put(numeroCliente, out);// agrego la conexion para enviar
+
+				String nombreCliente = ((MensajesChat) in.readObject()).getUsuario();
 
 				// Inicio el hilo
-				ServerHilo hilo = new ServerHilo(nombreCliente, in, out);
-				hilo.start();
+				ServerHilo hilo = new ServerHilo(numeroCliente, nombreCliente, in);
 
+				numeroCliente++;
+				hilo.start();
+				EnviarMensajes(numeroCliente, nombreCliente + " se conecto a la sala.");
 				System.out.println("Creada la conexion con el cliente " + nombreCliente);
 			}
 
-		} catch (IOException ex) {
+		} catch (IOException | ClassNotFoundException ex) {
 			ex.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
+		} finally {
+			try {
+				server.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 
 	}

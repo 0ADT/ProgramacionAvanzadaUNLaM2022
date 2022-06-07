@@ -1,6 +1,5 @@
 package desafios_del_taller.miniChat;
 
-import java.io.DataOutputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -8,13 +7,13 @@ import java.net.SocketException;
 
 public class ServerHilo extends Thread {
 	private String nombre;
-	private DataOutputStream salida;
 	private ObjectInputStream entrada;
+	private int numeroCliente;
 
-	public ServerHilo(String nombre, ObjectInputStream entrada, DataOutputStream salida) {
+	public ServerHilo(int numeroCliente, String nombre, ObjectInputStream entrada) {
 		this.nombre = nombre;
-		this.salida = salida;
 		this.entrada = entrada;
+		this.numeroCliente = numeroCliente;
 	}
 
 	@Override
@@ -24,16 +23,22 @@ public class ServerHilo extends Thread {
 		while (!salir) {
 			try {
 				MensajesChat mensajeChat = (MensajesChat) entrada.readObject();
-				System.out.println(mensajeChat.getUsuario() + " dice: " + mensajeChat.getMensaje());
+				String mensaje = mensajeChat.getUsuario() + " dice: " + mensajeChat.getMensaje();
+
+				System.out.println(mensaje);
+
+				Server.EnviarMensajes(this.numeroCliente, mensaje);
 
 			} catch (EOFException | SocketException e) {
 				System.out.println("El cliente " + nombre + " esta desconectado");
+
+				Server.EnviarMensajes(this.numeroCliente, nombre + " se ha desconectado");
+
 				salir = true;
-				
+
 				// Se cierran recursos
 				try {
 					entrada.close();
-					salida.close();
 				} catch (IOException e1) {
 					e1.printStackTrace();
 				}
@@ -43,7 +48,6 @@ public class ServerHilo extends Thread {
 
 				try {
 					entrada.close();
-					salida.close();
 				} catch (IOException e1) {
 					e1.printStackTrace();
 				}
