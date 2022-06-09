@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.List;
 
 public class GrafoMetro {
+	// La matriz no se usa en este ejercicio, queda para otros usos
 	private int[][] matrizAdyacencia;
 	private int cantNodos;
 	private int cantTuneles;
