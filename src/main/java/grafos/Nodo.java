@@ -1,26 +1,34 @@
 package grafos;
 
 public class Nodo {
-	private int origen;
-	private int peso;
-	private int destino;
-	
-	public Nodo(int origen, int peso, int destino) {
-		super();
-		this.origen = origen;
-		this.peso = peso;
-		this.destino = destino;
+	private int grado;
+	private String etiqueta = "";
+	private int numeroDeNodo;
+
+	public Nodo(String etiqueta, int numNodo) {
+		this.etiqueta = etiqueta;
+		this.grado = 0;
+		this.numeroDeNodo = numNodo;
 	}
 
-	public int getOrigen() {
-		return origen;
+	public Nodo(int numNodo) {
+		this.grado = 0;
+		this.numeroDeNodo = numNodo;
 	}
 
-	public int getPeso() {
-		return peso;
+	public int getNumeroDeNodo() {
+		return this.numeroDeNodo;
 	}
 
-	public int getDestino() {
-		return destino;
+	public String getEtiqueta() {
+		return this.etiqueta;
+	}
+
+	public int getGrado() {
+		return this.grado;
+	}
+
+	public void incrementarGrado() {
+		this.grado++;
 	}
 }
