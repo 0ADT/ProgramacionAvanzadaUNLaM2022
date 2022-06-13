@@ -8,13 +8,14 @@ public class GrafoNoDirigido extends Grafo {
 	public GrafoNoDirigido(int cantNodos) {
 		this.nodos = new ArrayList<Nodo>(cantNodos);
 		this.cantidadNodos = cantNodos;
-		this.matrizAdyacencia = new int[this.cantidadNodos][];
+		this.matrizAdyacencia = new int[this.cantidadNodos][this.cantidadNodos];
 
-		for (int i = 1; i < cantidadNodos; i++) {{
-				this.matrizAdyacencia[i] = new int[i];
+		for (int i = 0; i < cantidadNodos; i++) {
+			for (int j = 0; j < cantidadNodos; j++) {
+				this.matrizAdyacencia[i][j] = 0;
 			}
 		}
-		
+
 		costo = 0;
 	}
 
@@ -23,6 +24,8 @@ public class GrafoNoDirigido extends Grafo {
 		aristas.add(a);
 		this.cantidadAristas++;
 		this.matrizAdyacencia[a.getOrigen().getNumeroDeNodo()][a.getDestino().getNumeroDeNodo()] = a.getPeso();
+		a.getOrigen().addConexion(a);
+		a.getDestino().addConexion(new Arista(a.getDestino(), a.getPeso(), a.getOrigen()));
 		costo += a.getPeso();
 	}
 

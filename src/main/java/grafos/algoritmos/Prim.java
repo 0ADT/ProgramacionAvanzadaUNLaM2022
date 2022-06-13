@@ -1,68 +1,81 @@
 package grafos.algoritmos;
 
+import java.util.Iterator;
+import java.util.PriorityQueue;
+
+import grafos.Arista;
+import grafos.GrafoNoDirigido;
+import grafos.Nodo;
+
 public class Prim {
-	static int V = 5;
-	static int INT_MAX = Integer.MAX_VALUE;
+	public static GrafoNoDirigido AlgoritmoPrim_Cola(GrafoNoDirigido gnd) {
+		int verticesTotales = gnd.getCantidadNodos(); // Obtengo la cantidad total de vértices
+		Nodo vOrigen = gnd.getNodos().get(0);
 
-	// Returns true if edge u-v is a valid edge to be
-	// include in MST. An edge is valid if one end is
-	// already included in MST and other is not in MST.
-	static boolean isValidEdge(int u, int v, boolean[] inMST) {
-		if (u == v)
-			return false;
-		
-		if (inMST[u] == false && inMST[v] == false)
-			return false;
-		else if (inMST[u] == true && inMST[v] == true)
-			return false;
-		
-		return true;
-	}
+		if (vOrigen != null) {
+			GrafoNoDirigido gNuevo = new GrafoNoDirigido(verticesTotales);
+			gnd.getNodos().stream().forEach((v) -> {
+				gNuevo.addNodo(new Nodo(v.getEtiqueta(), v.getNumeroDeNodo()));
+			});
 
-	static void primMST(int cost[][]) {
-		boolean[] inMST = new boolean[V];
+			// Para esta implementación, los pesos son números enteros.
+			PriorityQueue<Arista> cola = new PriorityQueue<>(
+					(Arista a1, Arista a2) -> Integer.compare(a1.getPeso(), a2.getPeso()));
 
-		// Include first vertex in MST
-		inMST[0] = true;
+			int cont = 0;
 
-		// Keep adding edges while number of included
-		// edges does not become V-1.
-		int edge_count = 0, mincost = 0;
-		while (edge_count < V - 1) {
+			while (cont < verticesTotales - 1) {
+				for (Iterator<Arista> it = vOrigen.getConexiones().iterator(); it.hasNext();) {
+					Arista arc = it.next();
 
-			// Find minimum weight valid edge.
-			int min = INT_MAX, a = -1, b = -1;
-			for (int i = 0; i < V; i++) {
-				for (int j = 0; j < V; j++) {
-					if (cost[i][j] < min) {
-						if (isValidEdge(i, j, inMST)) {
-							min = cost[i][j];
-							a = i;
-							b = j;
-						}
+					if (!arc.getDestino().isVisitado()) {
+						cola.offer(arc);
 					}
+				}
+
+				Arista arista = cola.poll();
+
+				arista.getOrigen().setVisitado(true);
+
+				if (!arista.getDestino().isVisitado()) {
+					arista.getDestino().setVisitado(true);
+					gNuevo.addArista(arista);
+					cont++;
+					vOrigen = arista.getDestino();
 				}
 			}
 
-			if (a != -1 && b != -1) {
-				System.out.printf("Edge %d:(%d, %d) cost: %d \n", edge_count++, a, b, min);
-				mincost = mincost + min;
-				inMST[b] = inMST[a] = true;
-			}
+			return gNuevo;
 		}
-		System.out.printf("\n Minimum cost = %d \n", mincost);
+
+		return null;
 	}
 
-	// Driver Code
 	public static void main(String[] args) {
-		/*
-		 * Let us create the following graph 2 3 (0)--(1)--(2) | / \ | 6| 8/ \5 |7 | / \
-		 * | (3)-------(4) 9
-		 */
-		int cost[][] = { { INT_MAX, 2, INT_MAX, 6, INT_MAX }, { 2, INT_MAX, 3, 8, 5 },
-				{ INT_MAX, 3, INT_MAX, INT_MAX, 7 }, { 6, 8, INT_MAX, INT_MAX, 9 }, { INT_MAX, 5, 7, 9, INT_MAX } };
+		// Grafo del problema "metro" de la OIA
+		GrafoNoDirigido g = new GrafoNoDirigido(6);
+		Nodo n1 = new Nodo(0);
+		Nodo n2 = new Nodo(1);
+		Nodo n3 = new Nodo(2);
+		Nodo n4 = new Nodo(3);
+		Nodo n5 = new Nodo(4);
+		Nodo n6 = new Nodo(5);
 
-		// Print the solution
-		primMST(cost);
+		g.addNodo(n1);
+		g.addNodo(n2);
+		g.addNodo(n3);
+		g.addNodo(n4);
+		g.addNodo(n5);
+		g.addNodo(n6);
+
+		g.addArista(new Arista(n1, 1, n2));
+		g.addArista(new Arista(n1, 2, n3));
+		g.addArista(new Arista(n2, 1, n3));
+		g.addArista(new Arista(n3, 2, n4));
+		g.addArista(new Arista(n4, 1, n5));
+		g.addArista(new Arista(n4, 2, n6));
+		g.addArista(new Arista(n5, 2, n6));
+
+		System.out.println(AlgoritmoPrim_Cola(g).getCosto());
 	}
 }

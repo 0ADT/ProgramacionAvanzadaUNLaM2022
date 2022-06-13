@@ -28,10 +28,15 @@ public class Kruskal {
 
 	public static GrafoNoDirigido AlgoritmoKruskal(GrafoNoDirigido gnd) {
 		int cantNodos = gnd.getCantidadNodos();
+
 		if (cantNodos <= 0)
 			return null;
 
 		padres = new int[cantNodos];
+
+		for (int i = 0; i < cantNodos; i++) {
+			padres[i] = i;
+		}
 
 		List<Arista> aristas = gnd.getAristas();
 
@@ -62,5 +67,33 @@ public class Kruskal {
 		}
 
 		return aacm;
+	}
+
+	public static void main(String[] args) {
+		// Grafo del problema "metro" de la OIA
+		GrafoNoDirigido g = new GrafoNoDirigido(6);
+		Nodo n1 = new Nodo(0);
+		Nodo n2 = new Nodo(1);
+		Nodo n3 = new Nodo(2);
+		Nodo n4 = new Nodo(3);
+		Nodo n5 = new Nodo(4);
+		Nodo n6 = new Nodo(5);
+
+		g.addNodo(n1);
+		g.addNodo(n2);
+		g.addNodo(n3);
+		g.addNodo(n4);
+		g.addNodo(n5);
+		g.addNodo(n6);
+
+		g.addArista(new Arista(n1, 1, n2));
+		g.addArista(new Arista(n1, 2, n3));
+		g.addArista(new Arista(n2, 1, n3));
+		g.addArista(new Arista(n3, 2, n4));
+		g.addArista(new Arista(n4, 1, n5));
+		g.addArista(new Arista(n4, 2, n6));
+		g.addArista(new Arista(n5, 2, n6));
+
+		System.out.println(AlgoritmoKruskal(g).getCosto());
 	}
 }

@@ -14,7 +14,7 @@ public abstract class Grafo {
 		this.aristas = new ArrayList<Arista>();
 		this.cantidadAristas = 0;
 	}
-	
+
 	public Grafo(int cantNodos) {
 		this.nodos = new ArrayList<Nodo>(cantNodos);
 		this.aristas = new ArrayList<Arista>();
@@ -36,6 +36,7 @@ public abstract class Grafo {
 	public void addArista(Arista a) {
 		aristas.add(a);
 		this.cantidadAristas++;
+		a.getOrigen().addConexion(a);
 		this.matrizAdyacencia[a.getOrigen().getNumeroDeNodo()][a.getDestino().getNumeroDeNodo()] = a.getPeso();
 	}
 
