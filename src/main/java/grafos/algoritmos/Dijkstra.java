@@ -1,63 +1,120 @@
 package grafos.algoritmos;
 
 import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.LinkedList;
-import java.util.Queue;
 
+import grafos.Arista;
 import grafos.Grafo;
+import grafos.GrafoDirigido;
+import grafos.Nodo;
 
 public class Dijkstra {
-	public Hashtable<Integer, Integer> procesar(Grafo g, int s) {
-		// asigno "infinito" a cada posicion de distMin
-		Hashtable<Integer, Integer> distMin = new Hashtable<Integer, Integer>();
+	private int[] vectorCostosMinimos; // D
+	private int[] vectorPredecesores; // P
+	private int[][] matAdy;
+	private ArrayList<Nodo> listaNodos;
+	private Nodo nodoInicial;
 
-		inicializar(distMin, g.getCantidadNodos(), Integer.MAX_VALUE);
-
-		// asigno 0 a cada posicion de distAcum
-		Hashtable<Integer, Integer> distAcum = new Hashtable<Integer, Integer>();
-
-		inicializar(distAcum, g.getCantidadNodos(), 0);
-
-		Queue<Integer> q = new LinkedList<Integer>();
-
-		q.add(s);
-
-//		while (!q.isEmpty()) {
-//			// tomo el primero
-//			int n = q.poll();
-//			// lo marco como visitado
-//			g.setProcesado(n);
-//
-//			int acum = distAcum.get(n);
-//
-//			// obtengo los vecinos de n
-//			// pido sus vecinos
-//			ArrayList<Integer> vecinos = g.getVecinos(n);
-//
-//			for (int i = 0; i < vecinos.size(); i++) {
-//				// tomo el i-esimo vecino y su distancia
-//				int t = vecinos.get(i);
-//				int dist = g.getDistancia(n, t) + acum;
-//				int min = distMin.get(t);
-//
-//				if (dist < min) {
-//					distMin.put(t, dist);
-//					distAcum.put(t, dist);
-//				}
-//
-//				if (!q.contains(t)) {
-//					q.add(t);
-//				}
-//			}
-//		}
-
-		return distMin;
+	public Dijkstra(Grafo g, Nodo nodoInicial) {
+		vectorCostosMinimos = new int[g.getCantidadNodos()];
+		vectorPredecesores = new int[g.getCantidadNodos()];
+		listaNodos = (ArrayList<Nodo>) g.getNodos();
+		matAdy = g.getMatrizAdyacencia();
+		this.nodoInicial = nodoInicial;
 	}
 
-	private void inicializar(Hashtable<Integer, Integer> tdist, int size, int val) {
-		for (int i = 0; i < size; i++) {
-			tdist.put(i, val);
+	public int[] getVectorCostosMinimos() {
+		return vectorCostosMinimos;
+	}
+
+	public int[] getVectorPredecesores() {
+		return vectorPredecesores;
+	}
+
+	private ArrayList<Nodo> getSucesores(Nodo n) {
+		ArrayList<Nodo> nodos = new ArrayList<Nodo>(n.getConexiones().size());
+
+		for (Arista a : n.getConexiones()) {
+			nodos.add(a.getDestino());
+		}
+
+		return nodos;
+	}
+
+	private int peso(Nodo ini, Nodo fin) {
+		int peso = 0;
+
+		for (Arista a : ini.getConexiones()) {
+			if (a.getDestino().equals(fin))
+				peso = a.getPeso();
+		}
+
+		return peso;
+	}
+
+	public void AlgoritmoDijkstra_SinCola() {
+		ArrayList<Boolean> visitado = new ArrayList<Boolean>(listaNodos.size());
+		int[] vectorCostosMinimos = new int[listaNodos.size()];
+
+		for (int i = 0; i < listaNodos.size(); i++) {
+			vectorCostosMinimos[i] = matAdy[nodoInicial.getNumeroDeNodo()][i];
+		}
+
+		vectorCostosMinimos[nodoInicial.getNumeroDeNodo()] = 0;
+		visitado.set(nodoInicial.getNumeroDeNodo(), true);
+
+		Nodo v = null;
+
+		while (visitado.contains(false)) {
+			// v = nodo de menor distancia a s que no fue visitado aun
+
+			visitado.set(v.getNumeroDeNodo(), true);
+
+			for (Nodo w : getSucesores(v)) {
+				if (vectorCostosMinimos[w.getNumeroDeNodo()] > vectorCostosMinimos[v.getNumeroDeNodo()] + peso(w, v)) {
+					vectorCostosMinimos[w.getNumeroDeNodo()] = vectorCostosMinimos[v.getNumeroDeNodo()] + peso(w, v);
+					vectorPredecesores[w.getNumeroDeNodo()] = v.getNumeroDeNodo();
+				}
+			}
+		}
+	}
+
+	public void AlgoritmoDijkstra_ConCola() {
+
+	}
+
+	public static void main(String[] args) {
+		GrafoDirigido g = new GrafoDirigido(5);
+		Nodo n1 = new Nodo(0);
+		Nodo n2 = new Nodo(1);
+		Nodo n3 = new Nodo(2);
+		Nodo n4 = new Nodo(3);
+		Nodo n5 = new Nodo(4);
+
+		g.addNodo(n1);
+		g.addNodo(n2);
+		g.addNodo(n3);
+		g.addNodo(n4);
+		g.addNodo(n5);
+
+		g.addArista(new Arista(n1, 1, n2));
+		g.addArista(new Arista(n2, 1, n3));
+		g.addArista(new Arista(n2, 2, n4));
+		g.addArista(new Arista(n4, 2, n5));
+
+		Dijkstra d = new Dijkstra(g, n1);
+		int[] vecCostos = d.getVectorCostosMinimos();
+		int[] vecPred = d.getVectorPredecesores();
+
+		System.out.println("Costos minimos");
+
+		for (int i = 0; i < 5; i++) {
+			System.out.print(vecCostos[i] + " ");
+		}
+
+		System.out.println("Predecesores");
+
+		for (int i = 0; i < 5; i++) {
+			System.out.print(vecPred[i] + " ");
 		}
 	}
 }
