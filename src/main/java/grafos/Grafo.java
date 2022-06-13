@@ -24,7 +24,10 @@ public abstract class Grafo {
 
 		for (int i = 0; i < cantidadNodos; i++) {
 			for (int j = 0; j < cantidadNodos; j++) {
-				this.matrizAdyacencia[i][j] = 0;
+				if (i == j)
+					this.matrizAdyacencia[i][j] = 0;
+				else
+					this.matrizAdyacencia[i][j] = Integer.MAX_VALUE;
 			}
 		}
 	}
