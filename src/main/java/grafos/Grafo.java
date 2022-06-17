@@ -1,7 +1,10 @@
 package grafos;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 public abstract class Grafo {
 	protected int[][] matrizAdyacencia;
@@ -41,6 +44,80 @@ public abstract class Grafo {
 		this.cantidadAristas++;
 		a.getOrigen().addConexion(a);
 		this.matrizAdyacencia[a.getOrigen().getNumeroDeNodo()][a.getDestino().getNumeroDeNodo()] = a.getPeso();
+	}
+
+	public int[][] BFS(Nodo inicio) {
+		int distancia[] = new int[cantidadNodos];
+		int padre[] = new int[cantidadNodos];
+
+		// recorremos todos los vértices del grafo inicializándolos a NO_VISITADO,
+		// distancia INFINITA y padre de cada nodo NULL
+		for (Nodo n : nodos) {
+			n.setVisitado(false);
+			distancia[n.getNumeroDeNodo()] = Integer.MAX_VALUE; /* distancia infinita si el nodo no es alcanzable */
+			padre[n.getNumeroDeNodo()] = 0;
+		}
+
+		inicio.setVisitado(true);
+		distancia[inicio.getNumeroDeNodo()] = 0;
+		padre[inicio.getNumeroDeNodo()] = 0;
+
+		Queue<Nodo> Q = new LinkedList<>();
+
+		Q.add(inicio);
+
+		Iterator<Nodo> it = Q.iterator();
+
+		while (it.hasNext()) {
+			// extraemos el nodo u de la cola Q y exploramos todos sus nodos adyacentes
+			Nodo u = Q.poll();
+
+			for (Nodo v : u.getNodosConectados()) {
+				if (!v.isVisitado()) {
+					v.setVisitado(true);
+					distancia[v.getNumeroDeNodo()] = distancia[u.getNumeroDeNodo()] + 1;
+					padre[v.getNumeroDeNodo()] = u.getNumeroDeNodo();
+					Q.add(v);
+				}
+			}
+		}
+
+		int ret[][] = new int[2][];
+
+		ret[0] = distancia;
+		ret[1] = padre;
+
+		return ret;
+	}
+
+	public int[] DFS() {
+		int padre[] = new int[cantidadNodos];
+
+		for (Nodo n : nodos) {
+			n.setVisitado(false);
+			padre[n.getNumeroDeNodo()] = 0;
+		}
+
+		for (Nodo u : nodos) {
+			if (!u.isVisitado()) {
+				padre = DFS_Visitar(u, padre);
+			}
+		}
+
+		return padre;
+	}
+
+	private int[] DFS_Visitar(Nodo u, int[] padre) {
+		u.setVisitado(true);
+
+		for (Nodo v : u.getNodosConectados()) {
+			if (!v.isVisitado()) {
+				padre[v.getNumeroDeNodo()] = u.getNumeroDeNodo();
+				padre = DFS_Visitar(v, padre);
+			}
+		}
+
+		return padre;
 	}
 
 	public int[][] getMatrizAdyacencia() {
