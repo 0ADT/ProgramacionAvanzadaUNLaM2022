@@ -3,8 +3,11 @@ package ejercicios_OIA.rescatandoALaPrincesa;
 public class MainRescate {
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-
+		GrafoRescate gr = ArchivoRescate
+				.LeerArchivoRescate("src\\main\\resources\\ejercicios_loom\\rescatandoALaPrincesa\\princesa.in");
+		Rescate r = new Rescate(gr);
+		ArchivoRescate.EscribirArchivoRescate(
+				"src\\main\\resources\\ejercicios_loom\\rescatandoALaPrincesa\\princesa.out", r.rescatar());
 	}
 
 }

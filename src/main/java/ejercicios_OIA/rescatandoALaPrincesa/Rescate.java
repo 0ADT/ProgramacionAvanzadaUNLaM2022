@@ -8,6 +8,8 @@ public class Rescate {
 	}
 
 	public String rescatar() {
-		return null;
+		gr.ObtenerCaminos();
+
+		return gr.ObtenerRecorrido();
 	}
 }
